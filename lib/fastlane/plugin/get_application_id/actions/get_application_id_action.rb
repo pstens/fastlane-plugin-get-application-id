@@ -18,11 +18,11 @@ module Fastlane
               end
           end
 
-          if applicationId == nil
+          if applicationId.nil?
               UI.user_error!("Impossible to find the applicationId with the specified properties 😭")
           else
               # Store the applicationId in the shared hash
-              Actions.lane_context["APPLICATION_ID"]=applicationId
+              Actions.lane_context["APPLICATION_ID"]= applicationId
               UI.success("👍 applicationId found: #{applicationId}")
           end
 
