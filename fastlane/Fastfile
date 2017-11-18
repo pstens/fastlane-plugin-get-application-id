@@ -1,0 +1,7 @@
+lane :test do
+  value = get_application_id(
+        gradle_file_path:"project/build.gradle",
+        ext_constant_name:"applicationId"
+        )
+  puts "VALUE = #{value}"
+end
