@@ -5,6 +5,7 @@ module Fastlane
         application_id = nil
         constant_name ||= params[:ext_constant_name]
         gradle_file_path ||= params[:gradle_file_path]
+        flavor ||= params[:flavor]
         if !gradle_file_path.nil?
           UI.message("The get_application_id plugin will use gradle file at (#{gradle_file_path})!")
           application_id = get_application_id(gradle_file_path, constant_name)
@@ -14,7 +15,7 @@ module Fastlane
 
           Dir.glob("**/#{app_folder_name}/build.gradle") do |path|
             UI.message(" -> Found a build.gradle file at path: (#{path})!")
-            application_id = get_application_id(path, constant_name)
+            application_id = get_application_id(path, constant_name, flavor)
           end
         end
 
@@ -29,24 +30,35 @@ module Fastlane
         return application_id
       end
 
-      def self.get_application_id(path, constant_name)
+      def self.get_application_id(path, constant_name, flavor)
         application_id = nil
         unless File.file?(path)
           UI.message(" -> No file exists at path: (#{path})!")
           return application_id
         end
-        begin
-          file = File.new(path, 'r')
-          while (line = file.gets)
-            next unless line.include? constant_name
-            components = line.strip.split(' ')
-            application_id = components[components.length - 1].tr("\"", '')
-            break
+        if flavor.nil?
+          begin
+            file = File.new(path, 'r')
+            while (line = file.gets)
+              next unless line.include? constant_name
+              components = line.strip.split(' ')
+              application_id = components[components.length - 1].tr("\"", '')
+              break
+            end
+            file.close
+          rescue => err
+            UI.error("An exception occurred while reading the gradle file: #{err}")
+            err
           end
-          file.close
-        rescue => err
-          UI.error("An exception occurred while reading the gradle file: #{err}")
-          err
+        else
+          begin
+            File.open(path) do |f|
+              match = f.read.scan(/#{flavor} \{([^}]+)\}/).first
+              line = match.first.strip.split(/\n/).select { |l| l.include? constant_name }.first
+              components = line.strip.split(' ')
+              application_id = components.last
+            end
+          end
         end
         return application_id
       end
@@ -56,7 +68,7 @@ module Fastlane
       end
 
       def self.authors
-        ['Helder Pinhal']
+        ['Helder Pinhal (flavor support by Patrick Stens)']
       end
 
       def self.return_value
@@ -86,11 +98,17 @@ module Fastlane
                                          description: 'If the applicationId is set in an ext constant, specify the constant name (optional)',
                                          optional: true,
                                          type: String,
-                                         default_value: 'applicationId')
+                                         default_value: 'applicationId'),
+            FastlaneCore::ConfigItem.new(key: :flavor,
+                                         env_name: 'GETAPPLICATIONID_FLAVOR',
+                                         description: 'If there are multiple flavors (optional)',
+                                         optional: true,
+                                         type: String,
+                                         default_value: nil)
         ]
       end
 
-      def self.outpu
+      def self.output
         [
             ['APPLICATION_ID', 'The applicationId']
         ]
