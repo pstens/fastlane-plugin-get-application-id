@@ -56,7 +56,7 @@ module Fastlane
               match = f.read.scan(/#{flavor} \{([^}]+)\}/).first
               line = match.first.strip.split(/\n/).select { |l| l.include? constant_name }.first
               components = line.strip.split(' ')
-              application_id = components.last
+              application_id = components.last.tr("\"", '')
             end
           end
         end
