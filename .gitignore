@@ -12,3 +12,4 @@ coverage
 test-results
 
 .idea/
+app/build.gradle
