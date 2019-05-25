@@ -1,6 +1,6 @@
 module Fastlane
   module Actions
-    class GetApplicationIdAction < Action
+    class GetApplicationIdActionFlavor < Action
       def self.run(params)
         application_id = nil
         constant_name ||= params[:ext_constant_name]
