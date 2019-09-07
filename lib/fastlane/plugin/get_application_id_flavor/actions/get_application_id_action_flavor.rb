@@ -8,7 +8,7 @@ module Fastlane
         flavor ||= params[:flavor]
         if !gradle_file_path.nil?
           UI.message("The get_application_id plugin will use gradle file at (#{gradle_file_path})!")
-          application_id = get_application_id(gradle_file_path, constant_name)
+          application_id = get_application_id(gradle_file_path, constant_name, flavor)
         else
           app_folder_name ||= params[:app_folder_name]
           UI.message("The get_application_id plugin is looking inside your project folder (#{app_folder_name})!")
