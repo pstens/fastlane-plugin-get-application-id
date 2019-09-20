@@ -42,7 +42,7 @@ module Fastlane
             while (line = file.gets)
               next unless line.include? constant_name
               components = line.strip.split(' ')
-              application_id = components[components.length - 1].tr("\"", '')
+              application_id = components[components.length - 1].tr("\"'", '')
               break
             end
             file.close
@@ -56,7 +56,7 @@ module Fastlane
               match = f.read.scan(/#{flavor} \{([^}]+)\}/).first
               line = match.first.strip.split(/\n/).select { |l| l.include? constant_name }.first
               components = line.strip.split(' ')
-              application_id = components.last.tr("\"", '')
+              application_id = components.last.tr("\"'", '')
             end
           end
         end
