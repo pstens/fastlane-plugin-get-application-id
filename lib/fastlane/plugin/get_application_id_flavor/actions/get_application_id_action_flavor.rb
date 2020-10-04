@@ -53,7 +53,7 @@ module Fastlane
         else
           begin
             File.open(path) do |f|
-              match = f.read.scan(/#{flavor} \{([^}]+)\}/).last
+              match = f.read.scan(/^\s*#{flavor}\s*\{([^}]+)\}/).last
               line = match.first.strip.split(/\n/).select { |l| l.include? constant_name }.first
               components = line.strip.split(' ')
               application_id = components.last.tr("\"'", '')
