@@ -13,7 +13,7 @@ module Fastlane
           app_folder_name ||= params[:app_folder_name]
           UI.message("The get_application_id plugin is looking inside your project folder (#{app_folder_name})!")
 
-          Dir.glob("**/#{app_folder_name}/build.gradle") do |path|
+          Dir.glob("**/#{app_folder_name}/build.gradle*") do |path|
             UI.message(" -> Found a build.gradle file at path: (#{path})!")
             application_id = get_application_id(path, constant_name, flavor)
           end
@@ -53,7 +53,7 @@ module Fastlane
         else
           begin
             File.open(path) do |f|
-              match = f.read.scan(/^\s*#{flavor}\s*\{([^}]+)\}/).last
+              match = path.end_with?(".kts") ? f.read.scan(/.*create\(\"#{flavor}\"\).*\{([^}]+)\}/).last : f.read.scan(/^\s*#{flavor}\s*\{([^}]+)\}/).last
               line = match.first.strip.split(/\n/).select { |l| l.include? constant_name }.first
               components = line.strip.split(' ')
               application_id = components.last.tr("\"'", '')
